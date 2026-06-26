@@ -296,7 +296,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 **Author:** [ISHIKA GUPTA]
 
 - **GitHub:** [g-ishika](https://github.com/g-ishika)
-- **Email:** [ishikagupta2595@email.com]
+- **Email:** [ishikagupta2595@gmail.com]
 
 ---
 
