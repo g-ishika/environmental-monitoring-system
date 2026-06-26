@@ -1,0 +1,54 @@
+# Virtual Environment
+venv/
+env/
+ENV/
+env.bak/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pyc
+
+# Audio files (too large)
+audio_data/
+test_data/
+*.wav
+*.mp3
+*.flac
+*.ogg
+*.m4a
+
+# Trained models (large)
+models_checkpoints/
+*.pt
+*.pth
+*.onnx
+*.tflite
+
+# Logs and outputs
+logs/
+outputs/
+visualizations/
+temp_uploads/
+*.log
+*.out
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Config with secrets
+config/credentials.json
+*.env

@@ -1,0 +1,56 @@
+# Model configuration for environmental monitoring
+
+model:
+  architecture: "resnet50"  # Options: resnet18, resnet50, custom_cnn, attention_cnn
+  num_classes: 6
+  pretrained: true
+  dropout_rate: 0.3
+  attention_type: "se"  # Options: se, cbam, none
+  
+  # Input shape for the model
+  input:
+    channels: 3
+    height: 128
+    width: 128
+
+training:
+  optimizer: "adam"
+  learning_rate: 0.001
+  scheduler: "cosine"  # Options: step, cosine, plateau, none
+  epochs: 100
+  batch_size: 32
+  early_stopping_patience: 10
+  use_mixed_precision: true
+  gradient_clip_norm: 1.0
+  weight_decay: 0.0001
+  label_smoothing: 0.1
+  
+  # Loss function
+  loss: "cross_entropy"  # Options: cross_entropy, focal, label_smoothing
+  
+  # Callbacks
+  callbacks:
+    early_stopping: true
+    model_checkpoint: true
+    reduce_lr_on_plateau: true
+    tensorboard: true
+
+optimization:
+  quantization: true
+  pruning: false
+  onnx_export: true
+  torchscript: true
+
+ensemble:
+  enabled: false
+  models:
+    - "resnet18"
+    - "resnet50"
+    - "attention_cnn"
+  weights: [0.3, 0.4, 0.3]  # Optional, will be normalized
+
+deployment:
+  device: "cuda"  # cuda or cpu
+  batch_size: 32
+  num_workers: 4
+  use_amp: true  # Automatic Mixed Precision

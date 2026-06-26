@@ -1,0 +1,65 @@
+project:
+  name: "AI-Environmental-Monitoring-PyTorch"
+  version: "1.0.0"
+  description: "End-to-end PyTorch pipeline for environmental monitoring"
+
+data:
+  audio:
+    sample_rate: 22050
+    duration: 5.0  # seconds
+    n_mels: 128
+    n_fft: 2048
+    hop_length: 512
+  classes:
+    - "chainsaw"
+    - "gunshot"
+    - "vehicle"
+    - "fire"
+    - "animal_distress"
+    - "background"
+  train_split: 0.7
+  val_split: 0.15
+  test_split: 0.15
+  batch_size: 32
+  num_workers: 4
+
+model:
+  architecture: "resnet50"  # Options: resnet18, resnet50, custom_cnn, attention_cnn
+  num_classes: 6
+  pretrained: true
+  dropout_rate: 0.3
+  attention_type: "se"  # Options: se, cbam, none
+
+training:
+  optimizer: "adam"
+  learning_rate: 0.001
+  scheduler: "cosine"  # Options: step, cosine, plateau
+  epochs: 100
+  early_stopping_patience: 10
+  use_mixed_precision: true
+  gradient_clip_norm: 1.0
+  weight_decay: 0.0001
+  label_smoothing: 0.1
+
+inference:
+  threshold: 0.7
+  window_size: 5.0  # seconds
+  overlap: 0.5  # 50% overlap for real-time
+  alert_cooldown: 60  # seconds between alerts
+  device: "cuda"  # Options: cuda, cpu
+
+alerting:
+  channels:
+    - "email"
+    - "slack"
+  severity_levels:
+    - "info"
+    - "warning"
+    - "critical"
+  reporting_frequency: 3600  # seconds
+
+environmental_conditions:
+  noise_reduction: true
+  adaptive_threshold: true
+  weather_compensation: false
+  
