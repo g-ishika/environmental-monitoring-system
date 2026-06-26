@@ -10,11 +10,11 @@ import random
 from tqdm import tqdm
 import sys
 
-# Add parent directory to path for imports
+# Adding parent directory to path (for imports)
 sys.path.append(str(Path(__file__).parent.parent))
 
-from .preprocessing import AudioPreprocessor
-from .augmentation import DataAugmentation
+from preprocessing import AudioPreprocessor
+from augmentation import DataAugmentation
 from utils.logger import setup_logger
 
 logger = setup_logger(__name__)
@@ -48,7 +48,7 @@ class AudioDataset(Dataset):
         self.transform = transform
         self.cache_data = cache_data
         
-        # Find all audio files
+        
         self.file_paths = []
         self.labels = []
         self.cached_data = {} if cache_data else None
@@ -80,7 +80,7 @@ class AudioDataset(Dataset):
                 logger.warning(f"Directory not found: {class_dir}")
                 continue
             
-            # Find audio files
+            
             audio_files = list(class_dir.glob("*.wav")) + list(class_dir.glob("*.mp3"))
             audio_files += list(class_dir.glob("*.flac")) + list(class_dir.glob("*.ogg"))
             
@@ -88,7 +88,7 @@ class AudioDataset(Dataset):
                 self.file_paths.append(file_path)
                 self.labels.append(self.class_to_idx[class_name])
         
-        # Shuffle
+        
         combined = list(zip(self.file_paths, self.labels))
         random.shuffle(combined)
         self.file_paths, self.labels = zip(*combined)
@@ -103,14 +103,14 @@ class AudioDataset(Dataset):
         file_path = self.file_paths[idx]
         label = self.labels[idx]
         
-        # Check cache
+        # Check cache bruh
         if self.cached_data and str(file_path) in self.cached_data:
             mel_spec = self.cached_data[str(file_path)]
         else:
-            # Load and process audio
+            
             audio = self.preprocessor.load_audio(str(file_path))
             
-            # Apply augmentation if available
+            # Applying augmentation if availaible 
             if self.augmenter and self.transform is None:
                 audio = self.augmenter.augment(audio)
             
@@ -118,7 +118,7 @@ class AudioDataset(Dataset):
             processed = self.preprocessor.process_audio(audio, apply_noise_reduction=True)
             mel_spec = processed['mel_spectrogram']
             
-            # Convert to 3-channel image
+            
             mel_spec = mel_spec.unsqueeze(0)  # Add channel dimension
             mel_spec = mel_spec.repeat(3, 1, 1)  # Repeat for 3 channels
             
@@ -126,7 +126,7 @@ class AudioDataset(Dataset):
             if self.cached_data is not None:
                 self.cached_data[str(file_path)] = mel_spec
         
-        # Apply transform
+        
         if self.transform:
             mel_spec = self.transform(mel_spec)
         
@@ -176,7 +176,7 @@ def create_dataloaders(
             "fire", "animal_distress", "background"
         ]
     
-    # Create preprocessor
+
     preprocessor = AudioPreprocessor(
         sample_rate=22050,
         duration=5.0,
@@ -184,10 +184,10 @@ def create_dataloaders(
         device=device
     )
     
-    # Create augmenter for training
+    
     augmenter = DataAugmentation() if augment_train else None
     
-    # Create full dataset
+    
     full_dataset = AudioDataset(
         raw_dir=raw_dir,
         processed_dir=data_dir,
@@ -203,7 +203,7 @@ def create_dataloaders(
     val_size = int(val_split * total)
     test_size = total - train_size - val_size
     
-    # Split dataset
+    
     train_dataset, val_dataset, test_dataset = random_split(
         full_dataset, 
         [train_size, val_size, test_size]
@@ -211,7 +211,7 @@ def create_dataloaders(
     
     logger.info(f"Dataset split: Train={len(train_dataset)}, Val={len(val_dataset)}, Test={len(test_dataset)}")
     
-    # Create dataloaders
+    
     train_loader = DataLoader(
         train_dataset,
         batch_size=batch_size,

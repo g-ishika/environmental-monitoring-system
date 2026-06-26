@@ -6,7 +6,7 @@ import numpy as np
 from typing import Dict, List, Optional, Tuple
 from pathlib import Path
 import time
-import json
+import json 
 from dataclasses import dataclass
 import yaml
 
@@ -36,13 +36,13 @@ class Predictor:
         self.config = config
         self.threshold = config.get('threshold', 0.7)
         
-        # FIX: Get classes from config properly
+        
         self.classes = config.get('classes', [])
         if not self.classes:
-            # Try to get from data.classes if it exists
+            
             self.classes = config.get('data', {}).get('classes', [])
         
-        # If still empty, use defaults
+        
         if not self.classes:
             self.classes = ['chainsaw', 'gunshot', 'vehicle', 'fire', 'animal_distress', 'background']
             logger.warning(f"No classes in config, using defaults: {self.classes}")
@@ -55,7 +55,7 @@ class Predictor:
         logger.info(f"Number of classes: {self.num_classes}")
         logger.info(f"Classes: {self.classes}")
         
-        # Load model
+        
         self.model = self.load_model(model_path)
         self.model.eval()
         
@@ -66,7 +66,7 @@ class Predictor:
             n_mels=config.get('n_mels', 128)
         )
         
-        # Performance tracking
+        # Performance 
         self.inference_times = []
         self.total_predictions = 0
         
@@ -79,10 +79,10 @@ class Predictor:
         try:
             checkpoint = torch.load(model_path, map_location=self.device)
             
-            # Determine model architecture from config
+            
             model_name = self.config.get('model', {}).get('architecture', 'resnet50')
             
-            # FIX: Use the correct number of classes
+            
             num_classes = self.num_classes
             
             logger.info(f"Creating model with {num_classes} classes")
@@ -93,7 +93,7 @@ class Predictor:
                 dropout_rate=self.config.get('model', {}).get('dropout_rate', 0.3)
             )
             
-            # Load weights
+            # Load 
             if 'model_state_dict' in checkpoint:
                 model.load_state_dict(checkpoint['model_state_dict'])
             else:
@@ -112,10 +112,10 @@ class Predictor:
         processed = self.preprocessor.process_audio(audio_path)
         mel_spec = processed['mel_spectrogram']
         
-        # Convert to 3-channel image (for CNN input)
-        mel_spec = mel_spec.unsqueeze(0)  # Add channel dimension
-        mel_spec = mel_spec.repeat(3, 1, 1)  # Repeat for 3 channels
-        mel_spec = mel_spec.unsqueeze(0)  # Add batch dimension
+        
+        mel_spec = mel_spec.unsqueeze(0)  # channel dimension
+        mel_spec = mel_spec.repeat(3, 1, 1)  # for 3 channels
+        mel_spec = mel_spec.unsqueeze(0)  
         
         return mel_spec.to(self.device), processed['features']
     
@@ -123,10 +123,10 @@ class Predictor:
         """Run inference on audio file"""
         start_time = time.time()
         
-        # Preprocess
+        
         mel_spec, features = self.preprocess_audio(audio_path)
         
-        # Run inference
+        
         with torch.no_grad():
             outputs = self.model(mel_spec)
             probabilities = F.softmax(outputs, dim=1)
@@ -137,7 +137,7 @@ class Predictor:
         confidence = probabilities[0, class_id].item()
         class_name = self.classes[class_id] if class_id < len(self.classes) else "unknown"
         
-        # Check if alert is needed
+        
         is_alert = confidence >= self.threshold
         
         inference_time = time.time() - start_time
@@ -177,7 +177,7 @@ class Predictor:
         processed = self.preprocessor.process_audio(audio_chunk)
         mel_spec = processed['mel_spectrogram']
         
-        # Convert to 3-channel image
+        
         mel_spec = mel_spec.unsqueeze(0).repeat(3, 1, 1).unsqueeze(0)
         mel_spec = mel_spec.to(self.device)
         
