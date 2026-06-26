@@ -1,5 +1,5 @@
 
-# 🌳 AI-Powered Environmental Monitoring System
+#  AI-Powered Environmental Monitoring System
 
 > End-to-end deep learning pipeline for detecting illegal deforestation, poaching, and environmental hazards using acoustic sensor data.
 
@@ -10,7 +10,7 @@
 
 ---
 
-## 📌 Problem Statement
+##  Problem Statement
 
 Illegal deforestation and poaching are major environmental threats. Traditional monitoring methods like satellite imagery are:
 -  Too slow (days/weeks delay)
