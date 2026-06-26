@@ -17,7 +17,7 @@ Illegal deforestation and poaching are major environmental threats. Traditional 
 -  Too expensive
 -  Cannot detect real-time threats
 
-**Our Solution:** Use acoustic sensors to detect environmental threats in **real-time** 🎯
+**Our Solution:** Use acoustic sensors to detect environmental threats in **real-time** 
 
 ---
 
