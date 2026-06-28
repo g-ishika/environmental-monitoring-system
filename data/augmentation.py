@@ -1,4 +1,4 @@
-"""Data augmentation for environmental audio"""
+
 
 import torch
 import torchaudio
@@ -7,7 +7,7 @@ import random
 
 
 class DataAugmentation:
-    """Data augmentation for environmental audio using PyTorch"""
+    
     
     def __init__(self, sample_rate: int = 22050, apply_prob: float = 0.5):
         self.sample_rate = sample_rate
@@ -18,7 +18,7 @@ class DataAugmentation:
         if rate == 1.0:
             return audio
         
-        #for librosa
+        
         audio_np = audio.numpy()
         
         
