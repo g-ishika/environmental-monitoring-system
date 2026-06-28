@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 
 
 class Callback:
-    """Base callback class"""
+    
     
     def on_train_begin(self, trainer):
         pass
