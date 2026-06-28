@@ -14,26 +14,23 @@ from utils.logger import setup_logger
 
 logger = setup_logger(__name__)
 
-# Load configuration
+# Loading configuration
 with open('config/config.yaml', 'r') as f:
     config = yaml.safe_load(f)
 
-# Initialize components
 predictor = Predictor(
     model_path='models_checkpoints/best_model.pt',
     config=config
 )
 alert_system = AlertSystem(config)
 
-# Create FastAPI app
+ #usinf FastAPI app
 app = FastAPI(
     title="Environmental Monitoring API",
     description="API for environmental sound monitoring and alerting",
     version="1.0.0"
 )
 
-
-# Pydantic models
 class PredictionResponse(BaseModel):
     alert_id: Optional[str] = None
     event_type: str
@@ -49,7 +46,7 @@ class AlertHistoryResponse(BaseModel):
     alerts: List[dict]
 
 
-# Endpoints
+
 @app.get("/")
 async def root():
     return {
@@ -66,7 +63,7 @@ async def predict_audio(
 ):
     """Predict environmental event from audio file"""
     try:
-        # Save uploaded file temporarily
+        
         temp_dir = Path("temp_uploads")
         temp_dir.mkdir(exist_ok=True)
         
@@ -75,10 +72,10 @@ async def predict_audio(
             content = await file.read()
             f.write(content)
         
-        # Run prediction
+    
         result = predictor.predict(str(file_path))
         
-        # Create alert if needed
+        #create some alerts
         alert_id = None
         severity = "info"
         if result.is_alert:
@@ -95,7 +92,7 @@ async def predict_audio(
             alert_id = alert.alert_id
             severity = alert.severity
         
-        # Clean up temp file
+        
         file_path.unlink(missing_ok=True)
         
         return PredictionResponse(
