@@ -1,12 +1,11 @@
-"""Setup script for environmental monitoring system"""
+
 
 from setuptools import setup, find_packages
 from pathlib import Path
 
-# Read requirements
+
 requirements = Path("requirements.txt").read_text().splitlines()
 
-# Read README
 readme = Path("README.md").read_text() if Path("README.md").exists() else ""
 
 setup(
@@ -31,6 +30,9 @@ setup(
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
         "Topic :: Environmental Monitoring",
     ],
+
+
+
     entry_points={
         "console_scripts": [
             "train-model=scripts.train_model:main",
