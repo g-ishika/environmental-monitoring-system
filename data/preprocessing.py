@@ -27,7 +27,7 @@ class AudioPreprocessor:
     def load_audio(self, file_path: str) -> torch.Tensor:
         """Load and resample audio file"""
         try:
-            # Use torchaudio for efficient loading
+            # Using torchaudio for efficiency good stuff
             waveform, sr = torchaudio.load(file_path)
             
             # Resample if needed
@@ -39,14 +39,14 @@ class AudioPreprocessor:
             if waveform.shape[0] > 1:
                 waveform = torch.mean(waveform, dim=0, keepdim=True)
             
-            # Pad or truncate to fixed length
+            
             if waveform.shape[1] < self.n_samples:
                 pad_length = self.n_samples - waveform.shape[1]
                 waveform = torch.nn.functional.pad(waveform, (0, pad_length))
             else:
                 waveform = waveform[:, :self.n_samples]
             
-            return waveform.squeeze(0)  # Remove channel dimension
+            return waveform.squeeze(0)  
             
         except Exception as e:
             raise RuntimeError(f"Failed to load audio {file_path}: {e}")
@@ -54,7 +54,7 @@ class AudioPreprocessor:
     def apply_noise_reduction(self, audio: torch.Tensor) -> torch.Tensor:
         """Apply spectral noise reduction"""
         # FIX: Use detach() before converting to numpy
-        audio_np = audio.detach().numpy()  # ← FIXED THIS LINE
+        audio_np = audio.detach().numpy()  
         
         # Compute noise profile from first 0.5 seconds
         noise_samples = int(0.5 * self.sample_rate)
@@ -90,7 +90,7 @@ class AudioPreprocessor:
         if audio.dim() == 1:
             audio = audio.unsqueeze(0)
         
-        # Create Mel spectrogram transform
+        
         mel_transform = torchaudio.transforms.MelSpectrogram(
             sample_rate=self.sample_rate,
             n_fft=self.n_fft,
@@ -105,7 +105,7 @@ class AudioPreprocessor:
         # Convert to log scale (dB)
         mel_spec_db = torchaudio.transforms.AmplitudeToDB()(mel_spec)
         
-        # Normalize to [0, 1]
+        
         mel_min = mel_spec_db.min()
         mel_max = mel_spec_db.max()
         if mel_max > mel_min:
@@ -159,7 +159,7 @@ class AudioPreprocessor:
             features['spectral_rolloff'] = torch.tensor(0.0)
             features['spectral_bandwidth'] = torch.tensor(0.0)
         
-        # Zero crossing rate
+        
         try:
             zcr = librosa.feature.zero_crossing_rate(audio_np)
             features['zcr'] = torch.tensor(np.mean(zcr))

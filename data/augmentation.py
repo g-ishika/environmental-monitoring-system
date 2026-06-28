@@ -18,14 +18,14 @@ class DataAugmentation:
         if rate == 1.0:
             return audio
         
-        # Convert to numpy for librosa
+        #for librosa
         audio_np = audio.numpy()
         
-        # Apply time stretch
+        
         import librosa
         stretched = librosa.effects.time_stretch(audio_np, rate=rate)
         
-        # Ensure same length
+        
         if len(stretched) < len(audio_np):
             stretched = np.pad(stretched, (0, len(audio_np) - len(stretched)))
         else:
@@ -38,10 +38,10 @@ class DataAugmentation:
         if semitones == 0:
             return audio
         
-        # Convert to numpy for librosa
+        # since we arr going to use lebrosa
         audio_np = audio.numpy()
         
-        # Apply pitch shift
+        
         import librosa
         shifted = librosa.effects.pitch_shift(
             audio_np, sr=self.sample_rate, n_steps=semitones
@@ -61,22 +61,22 @@ class DataAugmentation:
     
     def augment(self, audio: torch.Tensor) -> torch.Tensor:
         """Apply random augmentations"""
-        # Random time stretch
+        
         if random.random() < self.apply_prob:
             rate = random.uniform(0.8, 1.2)
             audio = self.time_stretch(audio, rate)
         
-        # Random pitch shift
+        
         if random.random() < self.apply_prob:
             semitones = random.uniform(-2, 2)
             audio = self.pitch_shift(audio, semitones)
         
-        # Random noise
+        
         if random.random() < self.apply_prob * 0.5:
             noise_level = random.uniform(0.001, 0.01)
             audio = self.add_noise(audio, noise_level)
         
-        # Random time shift
+        
         if random.random() < self.apply_prob * 0.3:
             shift = random.uniform(-0.5, 0.5)
             audio = self.time_shift(audio, shift)

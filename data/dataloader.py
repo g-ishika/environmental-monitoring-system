@@ -15,22 +15,22 @@ class BalancedBatchSampler(Sampler):
         self.batch_size = batch_size
         self.drop_last = drop_last
         
-        # Group indices by class
+        
         self.class_indices = {}
         for idx, label in enumerate(labels):
             if label not in self.class_indices:
                 self.class_indices[label] = []
             self.class_indices[label].append(idx)
         
-        # Get number of classes
+        
         self.num_classes = len(self.class_indices)
         
-        # Calculate samples per class per batch
+        
         self.samples_per_class = batch_size // self.num_classes
         if self.samples_per_class == 0:
             self.samples_per_class = 1
         
-        # Total batches
+        
         self.total_samples = len(labels)
         self.num_batches = self.total_samples // batch_size
         
@@ -38,14 +38,14 @@ class BalancedBatchSampler(Sampler):
             self.num_batches += 1
     
     def __iter__(self) -> Iterator[List[int]]:
-        # Shuffle indices within each class
+        
         class_shuffled = {}
         for class_id, indices in self.class_indices.items():
             shuffled = indices.copy()
             random.shuffle(shuffled)
             class_shuffled[class_id] = shuffled
         
-        # Create batches
+
         batch_indices = []
         
         for batch_idx in range(self.num_batches):
@@ -56,17 +56,17 @@ class BalancedBatchSampler(Sampler):
                 if not class_indices:
                     continue
                 
-                # Take samples from this class
+                
                 samples = min(self.samples_per_class, len(class_indices))
                 batch.extend(class_indices[:samples])
                 
-                # Rotate indices
+                
                 class_shuffled[class_id] = class_indices[samples:] + class_indices[:samples]
             
-            # Shuffle batch
+            
             random.shuffle(batch)
             
-            # Truncate if needed
+            
             if len(batch) > self.batch_size:
                 batch = batch[:self.batch_size]
             
