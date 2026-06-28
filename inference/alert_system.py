@@ -17,7 +17,7 @@ logger = setup_logger(__name__)
 
 @dataclass
 class Alert:
-    """Alert data structure"""
+    
     alert_id: str
     timestamp: float
     severity: str
@@ -32,25 +32,25 @@ class Alert:
 
 
 class AlertSystem:
-    """Multi-channel alert generation and reporting system"""
+    
     
     def __init__(self, config: Dict):
         self.config = config
         self.alert_history = []
         self.max_history = config.get('max_history', 1000)
         
-        # Alert channels
+        
         self.channels = config.get('alerting', {}).get('channels', ['email', 'slack'])
         self.severity_levels = config.get('alerting', {}).get('severity_levels', ['info', 'warning', 'critical'])
         
-        # Load credentials
+        
         self.credentials = self.load_credentials()
         
-        # Cooldown tracking
+        
         self.cooldown_period = config.get('alerting', {}).get('cooldown', 300)
         self.last_alert_time = {}
         
-        # Rate limiting
+        
         self.alert_counts = {}
         self.last_reset = time.time()
     
@@ -86,12 +86,12 @@ class AlertSystem:
     
     def check_rate_limit(self, event_type: str) -> bool:
         """Check rate limiting for alerts"""
-        # Reset counts every hour
+        
         if time.time() - self.last_reset > 3600:
             self.alert_counts = {}
             self.last_reset = time.time()
         
-        # Max 10 alerts per hour per event type
+        
         if self.alert_counts.get(event_type, 0) >= 10:
             return False
         
@@ -123,12 +123,12 @@ class AlertSystem:
             audio_path=prediction_result.get('audio_path', '')
         )
         
-        # Store in history
+        # storing in histry
         self.alert_history.append(alert)
         if len(self.alert_history) > self.max_history:
             self.alert_history = self.alert_history[-self.max_history:]
         
-        # Log alert
+        #i forgot what i was doing, hoping it works
         self.log_alert(alert)
         
         return alert
@@ -144,7 +144,7 @@ class AlertSystem:
                 logger.warning("SMTP credentials not found")
                 return
             
-            # Create message
+            # Creatin message
             msg = MIMEMultipart()
             msg['From'] = smtp_config.get('from_email')
             msg['To'] = smtp_config.get('to_email')
@@ -153,8 +153,8 @@ class AlertSystem:
             body = self._format_alert_body(alert)
             msg.attach(MIMEText(body, 'plain'))
             
-            # Send email
-            with smtplib.SMTP(smtp_config.get('server', 'smtp.gmail.com'), 
+            # Sending email
+            with smtplib.SMTP(smtp_config.get('server', 'smtp@gmail.com'), 
                              smtp_config.get('port', 587)) as server:
                 server.starttls()
                 server.login(smtp_config.get('username'), smtp_config.get('password'))
@@ -180,7 +180,7 @@ class AlertSystem:
             if not webhook_url:
                 return
             
-            # Format message
+            # some calligraphy
             color = {
                 'info': '#3498db',
                 'warning': '#f39c12',
@@ -189,7 +189,7 @@ class AlertSystem:
             
             message = self._format_slack_message(alert, color)
             
-            # Send to Slack
+            
             response = requests.post(webhook_url, json=message)
             if response.status_code == 200:
                 logger.info(f"Slack alert sent: {alert.alert_id}")
@@ -220,14 +220,14 @@ class AlertSystem:
         if 'slack' in self.channels:
             self.send_slack_alert(alert)
         
-        # Log alert
+    
         self.log_alert(alert)
     
     def _format_alert_body(self, alert: Alert) -> str:
         """Format alert email body"""
         return f"""
         ALERT DETAILS
-        =============
+        
         Alert ID: {alert.alert_id}
         Severity: {alert.severity.upper()}
         Event: {alert.event_type}
@@ -236,11 +236,11 @@ class AlertSystem:
         Time: {datetime.fromtimestamp(alert.timestamp).strftime('%Y-%m-%d %H:%M:%S')}
         
         FEATURES
-        =========
+    
         {json.dumps(alert.details, indent=2)}
         
         AUDIO
-        =====
+        
         {alert.audio_path if alert.audio_path else "No audio file available"}
         
         This is an automated alert from the Environmental Monitoring System.
@@ -286,7 +286,7 @@ class AlertSystem:
             f.write(json.dumps(log_entry) + '\n')
     
     def get_alert_summary(self, hours: int = 24) -> Dict:
-        """Get summary of recent alerts"""
+        
         current_time = time.time()
         cutoff_time = current_time - (hours * 3600)
         
@@ -304,15 +304,15 @@ class AlertSystem:
         }
         
         for alert in recent_alerts:
-            # By severity
+        
             summary['by_severity'][alert.severity] = \
                 summary['by_severity'].get(alert.severity, 0) + 1
             
-            # By event type
+            
             summary['by_event_type'][alert.event_type] = \
                 summary['by_event_type'].get(alert.event_type, 0) + 1
             
-            # By location
+            
             summary['by_location'][alert.location] = \
                 summary['by_location'].get(alert.location, 0) + 1
         

@@ -21,11 +21,11 @@ logger = setup_logger(__name__)
 @dataclass
 class MonitoringConfig:
     """Configuration for real-time monitoring"""
-    window_size: float = 5.0  # seconds
-    overlap: float = 0.5  # 0-1
+    window_size: float = 5.0  # seconds ofc
+    overlap: float = 0.5  
     sample_rate: int = 22050
     buffer_size: int = 10  # Number of windows to keep in buffer
-    alert_cooldown: int = 60  # seconds
+    alert_cooldown: int = 60  # seconds ofc
     threshold: float = 0.7  # confidence threshold for alerts
     
     def __post_init__(self):
@@ -155,7 +155,7 @@ class RealTimeMonitor:
                     except queue.Empty:
                         continue
                 
-                # Accumulate audio
+        
                 accumulated_audio = np.concatenate([accumulated_audio, chunk])
                 
                 # Process windows
@@ -164,7 +164,7 @@ class RealTimeMonitor:
                     window = accumulated_audio[:self.window_samples]
                     accumulated_audio = accumulated_audio[self.hop_samples:]
                     
-                    # Process window
+                    
                     self._process_window(window)
                 
             except Exception as e:
@@ -198,7 +198,7 @@ class RealTimeMonitor:
             
             is_alert = confidence >= self.config.threshold
             
-            # Create result
+            
             result = PredictionResult(
                 class_name=class_name,
                 confidence=float(confidence),
@@ -221,13 +221,13 @@ class RealTimeMonitor:
             self.audio_buffer.append(audio_window)
             self.result_buffer.append(result)
             
-            # Put in result queue
+            
             try:
                 self.result_queue.put_nowait(result)
             except queue.Full:
                 pass
             
-            # Handle alert
+            
             if is_alert:
                 self.stats['alerts_triggered'] += 1
                 self._handle_alert(result)
