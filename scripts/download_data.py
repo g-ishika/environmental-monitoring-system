@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Download and prepare sample data for environmental monitoring"""
+
 
 import os
 import sys
@@ -13,7 +13,7 @@ import numpy as np
 import soundfile as sf
 import librosa
 
-# Add project root to path
+
 sys.path.append(str(Path(__file__).parent.parent))
 
 from utils.logger import setup_logger
@@ -22,9 +22,9 @@ logger = setup_logger(__name__)
 
 
 class DataDownloader:
-    """Download and prepare environmental audio datasets"""
     
-    def __init__(self, data_dir: str = "data/raw"):
+    
+    def __init__(self, data_dir: str = "audio_data/raw"):  
         self.data_dir = Path(data_dir)
         self.data_dir.mkdir(parents=True, exist_ok=True)
         
@@ -52,11 +52,11 @@ class DataDownloader:
             class_dir = self.data_dir / class_name
             class_dir.mkdir(exist_ok=True)
             
-            for i in range(10):  # Generate 10 samples per class
-                # Generate synthetic audio
+            for i in range(10):  
+                
                 audio = self._generate_synthetic_audio(class_name, sr, duration)
                 
-                # Save
+                
                 file_path = class_dir / f"{class_name}_{i:03d}.wav"
                 sf.write(file_path, audio, sr)
         
@@ -67,37 +67,36 @@ class DataDownloader:
         t = np.linspace(0, duration, int(sr * duration))
         
         if class_name == 'chainsaw':
-            # Chainsaw-like sound
+            
             freq = 200 + 50 * np.sin(2 * np.pi * 2 * t)
             audio = np.sin(2 * np.pi * freq * t)
             audio *= 0.5 + 0.5 * np.sin(2 * np.pi * 1.5 * t)
             
         elif class_name == 'gunshot':
-            # Gunshot-like sound
+            
             audio = np.random.randn(len(t)) * np.exp(-t * 20)
             audio = np.clip(audio, -1, 1)
             
         elif class_name == 'vehicle':
-            # Vehicle-like sound
+    
             audio = np.sin(2 * np.pi * 100 * t) * 0.3
             audio += np.random.randn(len(t)) * 0.1
             
         elif class_name == 'fire':
-            # Fire-like sound
+            
             audio = np.random.randn(len(t)) * np.exp(-t * 2)
             audio *= 0.3
             
         elif class_name == 'animal_distress':
-            # Animal distress-like sound
+            
             audio = np.sin(2 * np.pi * 2000 * t) * np.exp(-10 * (t % 0.1 - 0.05)**2)
             audio += np.sin(2 * np.pi * 3000 * t) * np.exp(-10 * ((t + 0.05) % 0.1 - 0.05)**2)
             
-        else:  # background
-            # Background noise
+        else:  
             audio = np.random.randn(len(t)) * 0.1
             audio += 0.5 * np.sin(2 * np.pi * 50 * t) * 0.1
         
-        # Normalize
+        
         audio = audio / (np.max(np.abs(audio)) + 1e-8)
         return audio
     
@@ -137,7 +136,7 @@ class DataDownloader:
         with zipfile.ZipFile(filepath, 'r') as zip_ref:
             zip_ref.extractall(extract_to)
         
-        # Remove zip file
+        
         filepath.unlink()
     
     def _extract_tar(self, filename: str, extract_to: Path):
@@ -152,7 +151,7 @@ class DataDownloader:
         with tarfile.open(filepath, 'r:gz') as tar_ref:
             tar_ref.extractall(extract_to)
         
-        # Remove tar file
+        
         filepath.unlink()
 
 
@@ -161,7 +160,7 @@ def main():
     parser.add_argument(
         '--data_dir',
         type=str,
-        default='data/raw',
+        default='audio_data/raw', 
         help='Directory to download data to'
     )
     parser.add_argument(
@@ -182,7 +181,7 @@ def main():
         downloader.download_esc50()
     elif args.dataset == 'sample':
         downloader.download_sample_data()
-    else:  # all
+    else:  
         downloader.download_urban_sound()
         downloader.download_esc50()
         downloader.download_sample_data()
