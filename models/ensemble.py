@@ -25,7 +25,7 @@ class ModelEnsemble(nn.Module):
                 pred = model(x)
                 predictions.append(pred * weight)
         
-        # Weighted average
+        # average
         ensemble_pred = torch.stack(predictions).sum(dim=0)
         return ensemble_pred
     
@@ -67,7 +67,7 @@ class WeightedEnsemble:
                 pred = torch.softmax(model(x), dim=1)
                 predictions.append(pred.cpu().numpy() * weight)
         
-        # Weighted average
+        # average
         ensemble_pred = np.sum(predictions, axis=0)
         return ensemble_pred
     
