@@ -1,4 +1,4 @@
-"""Tests for inference module"""
+
 
 import pytest
 import torch
@@ -11,7 +11,7 @@ from inference.alert_system import AlertSystem, Alert
 
 
 class TestPredictor:
-    """Test predictor functionality"""
+    
     
     @pytest.fixture
     def config(self):
@@ -25,9 +25,9 @@ class TestPredictor:
     
     @pytest.fixture
     def predictor(self, config, tmp_path):
-        # Create a dummy model
+        
         model_path = tmp_path / "dummy_model.pt"
-        # Save dummy model
+        
         dummy_model = torch.nn.Linear(10, 6)
         torch.save(dummy_model.state_dict(), model_path)
         
@@ -39,7 +39,7 @@ class TestPredictor:
         assert len(predictor.classes) == 6
     
     def test_preprocess_audio(self, predictor, tmp_path):
-        # Create dummy audio file
+    
         audio_path = tmp_path / "test.wav"
         dummy_audio = np.random.randn(22050 * 5).astype(np.float32)
         import soundfile as sf
@@ -86,8 +86,8 @@ class TestAlertSystem:
         assert alert_system.determine_severity(0.75) == 'info'
     
     def test_alert_cooldown(self, alert_system):
-        # First alert should not be in cooldown
+        
         assert alert_system.check_cooldown('chainsaw', 'Test') == False
         
-        # Immediately after, should be in cooldown
+        
         assert alert_system.check_cooldown('chainsaw', 'Test') == True
